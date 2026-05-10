@@ -3,14 +3,21 @@ package cn.aifei.cache.backend;
 import cn.aifei.cache.CacheConfig;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.Configuration;
 
 public class EhcacheCache extends AbstractCache {
+
+    private static final String CACHE_PREFIX = "aifei_cache_";
 
     private final CacheManager manager;
 
     public EhcacheCache(CacheConfig config) {
         super(config);
-        this.manager = CacheManager.create();
+        Configuration cfg = new Configuration()
+                .name("aifei-cache-" + Integer.toHexString(System.identityHashCode(this)))
+                .defaultCache(new CacheConfiguration("aifei-cache-default-template", (int) config.getMaxSize()));
+        this.manager = CacheManager.newInstance(cfg);
     }
 
     @Override
@@ -51,7 +58,9 @@ public class EhcacheCache extends AbstractCache {
     @Override
     public void clearAll() {
         for (String name : manager.getCacheNames()) {
-            clear(name);
+            if (name.startsWith(CACHE_PREFIX)) {
+                manager.getCache(name).removeAll();
+            }
         }
     }
 
@@ -72,17 +81,22 @@ public class EhcacheCache extends AbstractCache {
     }
 
     private net.sf.ehcache.Cache cache(String cacheName) {
-        net.sf.ehcache.Cache cache = manager.getCache(cacheName);
+        String realName = realCacheName(cacheName);
+        net.sf.ehcache.Cache cache = manager.getCache(realName);
         if (cache != null) {
             return cache;
         }
         synchronized (manager) {
-            cache = manager.getCache(cacheName);
+            cache = manager.getCache(realName);
             if (cache == null) {
-                cache = new net.sf.ehcache.Cache(cacheName, (int) config.getMaxSize(), false, false, 0, 0);
+                cache = new net.sf.ehcache.Cache(realName, (int) config.getMaxSize(), false, false, 0, 0);
                 manager.addCache(cache);
             }
             return cache;
         }
+    }
+
+    private String realCacheName(String cacheName) {
+        return CACHE_PREFIX + cacheName;
     }
 }

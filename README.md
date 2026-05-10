@@ -55,3 +55,9 @@ User user = CacheKit.getOrSet("user:1", 300, () -> User.findById(1));
 CacheKit.remove("user:1");
 CacheKit.clear("default");
 ```
+
+## Notes
+
+- `redis` backend serializes ordinary values with JDK serialization, so custom objects must implement `Serializable`.
+- Redis counters are stored as integer text and returned as `Long`.
+- Keep `cache.keyPrefix` non-empty when using Redis. `clearAll()` refuses to run with an empty prefix.

@@ -7,9 +7,13 @@ import java.util.function.Supplier;
 public abstract class AbstractCache implements Cache {
 
     protected final CacheConfig config;
+    private final Object[] locks = new Object[64];
 
     protected AbstractCache(CacheConfig config) {
         this.config = config;
+        for (int i = 0; i < locks.length; i++) {
+            locks[i] = new Object();
+        }
     }
 
     @Override
@@ -67,9 +71,20 @@ public abstract class AbstractCache implements Cache {
         if (value != null || exists(cacheName, key)) {
             return value;
         }
-        value = supplier.get();
-        put(cacheName, key, value, ttlSeconds);
-        return value;
+        synchronized (lockFor(cacheName, key)) {
+            value = get(cacheName, key);
+            if (value != null || exists(cacheName, key)) {
+                return value;
+            }
+            value = supplier.get();
+            put(cacheName, key, value, ttlSeconds);
+            return value;
+        }
+    }
+
+    private Object lockFor(String cacheName, String key) {
+        int hash = 31 * cacheName.hashCode() + key.hashCode();
+        return locks[(hash & 0x7fffffff) % locks.length];
     }
 
     @Override

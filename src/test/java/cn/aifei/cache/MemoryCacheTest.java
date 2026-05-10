@@ -10,35 +10,67 @@ public class MemoryCacheTest {
 
     @Test
     public void basicOps() {
-        Cache cache = new CachePlugin(new CacheConfig().setType("memory")).createCache(new CacheConfig().setType("memory"));
-        cache.put("k", "v");
-        assertEquals("v", cache.get("k"));
-        assertTrue(cache.exists("k"));
-        cache.remove("k");
-        assertNull(cache.get("k"));
+        for (String type : localBackends()) {
+            Cache cache = create(type);
+            cache.put("k", "v");
+            assertEquals(type, "v", cache.get("k"));
+            assertTrue(type, cache.exists("k"));
+            cache.remove("k");
+            assertNull(type, cache.get("k"));
+            cache.close();
+        }
     }
 
     @Test
     public void ttlWorks() throws Exception {
-        Cache cache = new CachePlugin(new CacheConfig().setType("memory")).createCache(new CacheConfig().setType("memory"));
-        cache.put("k", "v", 1);
-        assertEquals("v", cache.get("k"));
-        Thread.sleep(1100);
-        assertNull(cache.get("k"));
+        for (String type : localBackends()) {
+            Cache cache = create(type);
+            cache.put("k", "v", 1);
+            assertEquals(type, "v", cache.get("k"));
+            Thread.sleep(1100);
+            assertNull(type, cache.get("k"));
+            cache.close();
+        }
     }
 
     @Test
     public void getOrSetWorks() {
-        Cache cache = new CachePlugin(new CacheConfig().setType("memory")).createCache(new CacheConfig().setType("memory"));
-        AtomicInteger n = new AtomicInteger();
-        assertEquals("v", cache.getOrSet("k", () -> {
-            n.incrementAndGet();
-            return "v";
-        }));
-        assertEquals("v", cache.getOrSet("k", () -> {
-            n.incrementAndGet();
-            return "x";
-        }));
-        assertEquals(1, n.get());
+        for (String type : localBackends()) {
+            Cache cache = create(type);
+            AtomicInteger n = new AtomicInteger();
+            assertEquals(type, "v", cache.getOrSet("k", () -> {
+                n.incrementAndGet();
+                return "v";
+            }));
+            assertEquals(type, "v", cache.getOrSet("k", () -> {
+                n.incrementAndGet();
+                return "x";
+            }));
+            assertEquals(type, 1, n.get());
+            cache.close();
+        }
+    }
+
+    @Test
+    public void incrAndDecrWork() {
+        for (String type : localBackends()) {
+            Cache cache = create(type);
+            assertEquals(type, 1L, cache.incr("n"));
+            assertEquals(type, 6L, cache.incr("n", "x", 6));
+            assertEquals(type, 4L, cache.decr("n", "x", 2));
+            cache.close();
+        }
+    }
+
+    private String[] localBackends() {
+        return new String[]{"memory", "caffeine", "ehcache"};
+    }
+
+    private Cache create(String type) {
+        CacheConfig config = new CacheConfig()
+                .setType(type)
+                .setDefaultName("test_" + type + "_" + System.nanoTime())
+                .setMaxSize(100);
+        return new CachePlugin(config).createCache(config);
     }
 }

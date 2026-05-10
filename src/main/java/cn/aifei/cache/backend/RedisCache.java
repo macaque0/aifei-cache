@@ -39,7 +39,11 @@ public class RedisCache extends AbstractCache {
     protected Object getValue(String cacheName, String key) {
         try (Jedis jedis = pool.getResource()) {
             byte[] bytes = jedis.get(realKey(cacheName, key));
-            return bytes == null ? null : serializer.deserialize(bytes);
+            if (bytes == null) {
+                return null;
+            }
+            Long counterValue = tryParseLong(bytes);
+            return counterValue != null ? counterValue : serializer.deserialize(bytes);
         }
     }
 
@@ -77,13 +81,36 @@ public class RedisCache extends AbstractCache {
 
     @Override
     public void clearAll() {
-        deleteByPattern((config.getKeyPrefix() == null ? "" : config.getKeyPrefix() + ":") + "*");
+        if (config.getKeyPrefix() == null || config.getKeyPrefix().trim().isEmpty()) {
+            throw new IllegalStateException("Redis clearAll requires non-empty cache.keyPrefix");
+        }
+        deleteByPattern(config.getKeyPrefix() + ":*");
     }
 
     @Override
     public long incr(String cacheName, String key, long delta) {
         try (Jedis jedis = pool.getResource()) {
-            return jedis.incrBy(realKey(cacheName, key), delta);
+            byte[] realKey = realKey(cacheName, key);
+            byte[] old = jedis.get(realKey);
+            Long counter = tryParseLong(old);
+            if (old == null || counter != null) {
+                return jedis.incrBy(realKey, delta);
+            }
+
+            Object value = serializer.deserialize(old);
+            if (!(value instanceof Number)) {
+                throw new IllegalStateException("Cache value is not an integer counter: " + cacheName + ":" + key);
+            }
+
+            long next = ((Number) value).longValue() + delta;
+            byte[] bytes = String.valueOf(next).getBytes(StandardCharsets.UTF_8);
+            long ttlMillis = jedis.pttl(realKey);
+            if (ttlMillis > 0) {
+                jedis.psetex(realKey, ttlMillis, bytes);
+            } else {
+                jedis.set(realKey, bytes);
+            }
+            return next;
         }
     }
 
@@ -114,6 +141,18 @@ public class RedisCache extends AbstractCache {
 
     private byte[] realKey(String cacheName, String key) {
         return (realPrefix(cacheName) + key).getBytes(StandardCharsets.UTF_8);
+    }
+
+    private Long tryParseLong(byte[] bytes) {
+        try {
+            String value = new String(bytes, StandardCharsets.UTF_8);
+            if (!value.matches("-?\\d+")) {
+                return null;
+            }
+            return Long.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private URI redisUri(CacheConfig config) {
