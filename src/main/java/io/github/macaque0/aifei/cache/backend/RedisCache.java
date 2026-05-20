@@ -1,8 +1,8 @@
-package cn.aifei.cache.backend;
+package io.github.macaque0.aifei.cache.backend;
 
-import cn.aifei.cache.CacheConfig;
-import cn.aifei.cache.serializer.CacheSerializer;
-import cn.aifei.cache.serializer.JdkCacheSerializer;
+import io.github.macaque0.aifei.cache.CacheConfig;
+import io.github.macaque0.aifei.cache.serializer.CacheSerializer;
+import io.github.macaque0.aifei.cache.serializer.JdkCacheSerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;

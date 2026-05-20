@@ -1,11 +1,11 @@
-package cn.aifei.cache;
+package io.github.macaque0.aifei.cache;
 
 import cn.aifei.aop.Aop;
 import cn.aifei.aop.AopKit;
-import cn.aifei.cache.backend.CaffeineCache;
-import cn.aifei.cache.backend.EhcacheCache;
-import cn.aifei.cache.backend.MemoryCache;
-import cn.aifei.cache.backend.RedisCache;
+import io.github.macaque0.aifei.cache.backend.CaffeineCache;
+import io.github.macaque0.aifei.cache.backend.EhcacheCache;
+import io.github.macaque0.aifei.cache.backend.MemoryCache;
+import io.github.macaque0.aifei.cache.backend.RedisCache;
 import cn.aifei.plugin.Plugin;
 
 public class CachePlugin implements Plugin {

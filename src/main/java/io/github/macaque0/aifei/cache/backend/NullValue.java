@@ -1,4 +1,4 @@
-package cn.aifei.cache.backend;
+package io.github.macaque0.aifei.cache.backend;
 
 import java.io.Serializable;
 

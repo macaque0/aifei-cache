@@ -23,7 +23,7 @@ The project is compiled with Java 8 bytecode target and has been tested with JDK
 
 ```xml
 <dependency>
-    <groupId>cn.aifei</groupId>
+    <groupId>io.github.macaque0</groupId>
     <artifactId>aifei-cache</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -50,7 +50,7 @@ Current backend dependency versions:
 Register the plugin in the Aifei application config:
 
 ```java
-import cn.aifei.cache.CachePlugin;
+import io.github.macaque0.aifei.cache.CachePlugin;
 import cn.aifei.plugin.Plugins;
 
 public void configPlugin(Plugins plugins) {
@@ -73,7 +73,7 @@ You can also inject `Cache` into objects created or injected by Aifei AOP:
 
 ```java
 import cn.aifei.aop.Inject;
-import cn.aifei.cache.Cache;
+import io.github.macaque0.aifei.cache.Cache;
 
 public class UserService {
 
@@ -283,10 +283,10 @@ In normal Aifei applications, prefer `CachePlugin` to manage `init`, `clearInit`
 In normal Aifei projects, prefer `CachePlugin`. For tests or standalone usage, initialize manually:
 
 ```java
-import cn.aifei.cache.Cache;
-import cn.aifei.cache.CacheConfig;
-import cn.aifei.cache.CacheKit;
-import cn.aifei.cache.backend.CaffeineCache;
+import io.github.macaque0.aifei.cache.Cache;
+import io.github.macaque0.aifei.cache.CacheConfig;
+import io.github.macaque0.aifei.cache.CacheKit;
+import io.github.macaque0.aifei.cache.backend.CaffeineCache;
 
 CacheConfig config = new CacheConfig()
         .setType("caffeine")

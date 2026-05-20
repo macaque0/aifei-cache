@@ -1,4 +1,4 @@
-package cn.aifei.cache;
+package io.github.macaque0.aifei.cache;
 
 import cn.aifei.util.PropKit;
 

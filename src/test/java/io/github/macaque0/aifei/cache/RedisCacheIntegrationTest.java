@@ -1,6 +1,6 @@
-package cn.aifei.cache;
+package io.github.macaque0.aifei.cache;
 
-import cn.aifei.cache.backend.RedisCache;
+import io.github.macaque0.aifei.cache.backend.RedisCache;
 import org.junit.Assume;
 import org.junit.Test;
 

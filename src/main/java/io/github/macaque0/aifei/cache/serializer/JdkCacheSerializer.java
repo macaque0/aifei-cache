@@ -1,4 +1,4 @@
-package cn.aifei.cache.serializer;
+package io.github.macaque0.aifei.cache.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

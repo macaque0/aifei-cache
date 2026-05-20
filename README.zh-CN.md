@@ -25,7 +25,7 @@
 
 ```xml
 <dependency>
-    <groupId>cn.aifei</groupId>
+    <groupId>io.github.macaque0</groupId>
     <artifactId>aifei-cache</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -52,7 +52,7 @@
 在 Aifei 应用配置中注册插件：
 
 ```java
-import cn.aifei.cache.CachePlugin;
+import io.github.macaque0.aifei.cache.CachePlugin;
 import cn.aifei.plugin.Plugins;
 
 public void configPlugin(Plugins plugins) {
@@ -75,7 +75,7 @@ CacheKit.remove("user:1");
 
 ```java
 import cn.aifei.aop.Inject;
-import cn.aifei.cache.Cache;
+import io.github.macaque0.aifei.cache.Cache;
 
 public class UserService {
 
@@ -285,10 +285,10 @@ CacheKit.clearInit();
 普通 Aifei 项目推荐使用 `CachePlugin`。在测试或独立工具中，也可以手动初始化：
 
 ```java
-import cn.aifei.cache.Cache;
-import cn.aifei.cache.CacheConfig;
-import cn.aifei.cache.CacheKit;
-import cn.aifei.cache.backend.CaffeineCache;
+import io.github.macaque0.aifei.cache.Cache;
+import io.github.macaque0.aifei.cache.CacheConfig;
+import io.github.macaque0.aifei.cache.CacheKit;
+import io.github.macaque0.aifei.cache.backend.CaffeineCache;
 
 CacheConfig config = new CacheConfig()
         .setType("caffeine")

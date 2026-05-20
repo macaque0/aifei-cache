@@ -1,4 +1,4 @@
-package cn.aifei.cache.serializer;
+package io.github.macaque0.aifei.cache.serializer;
 
 public interface CacheSerializer {
     byte[] serialize(Object value);

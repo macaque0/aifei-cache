@@ -1,6 +1,6 @@
-package cn.aifei.cache.backend;
+package io.github.macaque0.aifei.cache.backend;
 
-import cn.aifei.cache.CacheConfig;
+import io.github.macaque0.aifei.cache.CacheConfig;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.Iterator;
 import java.util.Map;

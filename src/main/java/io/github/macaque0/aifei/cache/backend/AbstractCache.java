@@ -1,7 +1,7 @@
-package cn.aifei.cache.backend;
+package io.github.macaque0.aifei.cache.backend;
 
-import cn.aifei.cache.Cache;
-import cn.aifei.cache.CacheConfig;
+import io.github.macaque0.aifei.cache.Cache;
+import io.github.macaque0.aifei.cache.CacheConfig;
 import java.util.function.Supplier;
 
 public abstract class AbstractCache implements Cache {
